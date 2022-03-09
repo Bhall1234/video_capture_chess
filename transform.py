@@ -1,6 +1,6 @@
-
 import cv2
 import numpy as np
+import matplotlib.pylot as plt
 
 def rotate_image(image, angle):
     # Grab the dimensions of the image and then determine the center
