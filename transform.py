@@ -1,6 +1,8 @@
+# use two percentages to create a cell
 import cv2
 import numpy as np
-import matplotlib.pylot as plt
+import matplotlib.pyplot as plt
+# use two percentages to create a cell
 
 def rotate_image(image, angle):
     # Grab the dimensions of the image and then determine the center
