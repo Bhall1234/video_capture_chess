@@ -1,8 +1,15 @@
+#https://stackoverflow.com/questions/67823386/how-to-find-the-empty-squares-in-a-chess-board-image
+#https://stackoverflow.com/questions/58396131/how-to-identify-largest-bounding-rectangles-from-an-image-and-separate-them-into
+
 # use two percentages to create a cell
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage.filters import threshold_otsu
 # use two percentages to create a cell
+
+def round_down_to_next_multiple_of_8(a):
+    return a & (-8)
 
 def rotate_image(image, angle):
     # Grab the dimensions of the image and then determine the center
@@ -89,14 +96,48 @@ while(cap.isOpened()):
         transformed = perspective_transform(original, approx)
         rotated = rotate_image(transformed, -90)
         cv2.imwrite('ROI_{}.png'.format(ROI_number), rotated)
-        cv2.imshow('ROI_{}'.format(ROI_number), rotated)
+        #cv2.imshow('ROI_{}'.format(ROI_number), rotated)
+        wh = np.min(round_down_to_next_multiple_of_8(np.array(rotated.shape[:2])))
+        img = cv2.resize(rotated, (wh, wh))
+
+    # Prepare some visualization output
+        out = img.copy()
+        plt.figure(1, figsize=(18, 6))
+        plt.subplot(1, 3, 1), plt.imshow(img)
+
+    # Blur image
+        img = cv2.blur(img, (5, 5))
+
+# Iterate tiles, and count unique colors inside
+# https://stackoverflow.com/a/56606457/11089932
+        wh_t = wh // 8
+        count_unique_colors = np.zeros((8, 8))
+        for x in np.arange(8):
+            for y in np.arange(8):
+                tile = img[y*wh_t:(y+1)*wh_t, x*wh_t:(x+1)*wh_t]
+                tile = tile[3:-3, 3:-3]
+                count_unique_colors[y, x] = np.unique(tile.reshape(-1, tile.shape[-1]), axis=0).shape[0]
+
+        # Mask empty squares using cutoff from Otsu's method
+        val = threshold_otsu(count_unique_colors)
+        mask = count_unique_colors < val
+
+        # Some more visualization output
+        for x in np.arange(8):
+            for y in np.arange(8):
+                if mask[y, x]:
+                    cv2.rectangle(out, (x*wh_t+3, y*wh_t+3),
+                          ((x+1)*wh_t-3, (y+1)*wh_t-3), (0, 255, 0), 2)
+        plt.subplot(1, 3, 2), plt.imshow(count_unique_colors, cmap='gray')
+        plt.subplot(1, 3, 3), plt.imshow(out)
+        plt.tight_layout(), plt.show()
         ROI_number += 1
 
   if cv2.waitKey(1) & 0xFF == ord('q'):
     break
 
 #cv2.imshow('thresh', thresh)
-cv2.imshow('image', frame)
+#cv2.imshow('image', frame)
 cap.release()
 cv2.destroyAllWindows()
 cv2.waitKey()
