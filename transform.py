@@ -8,6 +8,10 @@ import matplotlib.pyplot as plt
 from skimage.filters import threshold_otsu
 # use two percentages to create a cell
 
+def set_res(cap, width, height):
+    cap.set(3, width)
+    cap.set(4, height)
+
 def round_down_to_next_multiple_of_8(a):
     return a & (-8)
 
@@ -77,6 +81,9 @@ def perspective_transform(image, corners):
 
 #cap = cv2.VideoCapture('Video\\test1639658932.91.avi')
 cap = cv2.VideoCapture(1)
+#set_res(cap, 1920, 1080)   # For 1080P
+#set_res(cap, 1280, 720)
+
 
 while(cap.isOpened()):
   ret, frame = cap.read()
