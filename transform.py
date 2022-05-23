@@ -76,7 +76,7 @@ def perspective_transform(image, corners):
     return cv2.warpPerspective(image, matrix, (width, height))
 
 #cap = cv2.VideoCapture('Video\\test1639658932.91.avi')
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while(cap.isOpened()):
   ret, frame = cap.read()
