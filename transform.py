@@ -1,4 +1,4 @@
-#https://stackoverflow.com/questions/67823386/how-to-find-the-empty-squares-in-a-chess-board-image
+# Original code from post below, rights to the original owner, do not claim to have made this.
 #https://stackoverflow.com/questions/58396131/how-to-identify-largest-bounding-rectangles-from-an-image-and-separate-them-into
 
 # use two percentages to create a cell
