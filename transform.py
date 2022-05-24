@@ -13,23 +13,39 @@ def round_down_to_next_multiple_of_8(a):
 
 def rotate_image(image, angle):
     # Grab the dimensions of the image and then determine the center
+    print()
     (h, w) = image.shape[:2]
+    print(f"Height: {h}, Width: {w}")
     (cX, cY) = (w / 2, h / 2)
+    print(f"cX: {cX}, cY: {cY}")
+
 
     # grab the rotation matrix (applying the negative of the
     # angle to rotate clockwise), then grab the sine and cosine
     # (i.e., the rotation components of the matrix)
     M = cv2.getRotationMatrix2D((cX, cY), -angle, 1.0)
+    print(f"getRotationMatrix2D: {M}")
     cos = np.abs(M[0, 0])
+    print(f"cos: {cos}")
     sin = np.abs(M[0, 1])
+    print(f"sin: {sin}")
+
 
     # Compute the new bounding dimensions of the image
     nW = int((h * sin) + (w * cos))
+    print(f"new width: {nW}")
+
     nH = int((h * cos) + (w * sin))
+    print(f"new height: {nH}")
+
 
     # Adjust the rotation matrix to take into account translation
     M[0, 2] += (nW / 2) - cX
+    print(f"Adjusted Rotation [0, 2]: {M}")
+
     M[1, 2] += (nH / 2) - cY
+    print(f"Adjusted Rotation [1, 2]: {M}")
+    print()
 
     # Perform the actual rotation and return the image
     return cv2.warpAffine(image, M, (nW, nH))
