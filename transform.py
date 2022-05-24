@@ -75,37 +75,38 @@ def perspective_transform(image, corners):
     # Return the transformed image
     return cv2.warpPerspective(image, matrix, (width, height))
 
-#cap = cv2.VideoCapture('Video\\test1639658932.91.avi')
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('Video\\test1639658932.91_Trim.mp4')
 
 while(cap.isOpened()):
-  ret, frame = cap.read()
-  original = frame.copy()
-  gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-  thresh = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,3)
+    ret, frame = cap.read()
+    original = frame.copy()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,3)
 
-  cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-  cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-  cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:3]
+    cv2.imshow('thresh', thresh)
+    #cv2.imshow('image', frame)
 
-  ROI_number = 0
-  for c in cnts:
-    peri = cv2.arcLength(c, True)
-    approx = cv2.approxPolyDP(c, 0.015 * peri, True)
+    cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:3]
 
-    if len(approx) == 4:
-        cv2.drawContours(frame,[c], 0, (36,255,12), 3)
-        transformed = perspective_transform(original, approx)
-        rotated = rotate_image(transformed, -90)
-        cv2.imwrite('ROI_{}.png'.format(ROI_number), rotated)
-        cv2.imshow('ROI_{}'.format(ROI_number), rotated)
-        ROI_number += 1
+    ROI_number = 0
+    for c in cnts:
+        peri = cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, 0.015 * peri, True)
+
+        if len(approx) == 4:
+            cv2.drawContours(frame,[c], 0, (36,255,12), 3)
+            transformed = perspective_transform(original, approx)
+            rotated = rotate_image(transformed, -90)
+            cv2.imwrite('ROI_{}.png'.format(ROI_number), rotated)
+            cv2.imshow('ROI_{}'.format(ROI_number), rotated)
+            ROI_number += 1
  
-  if cv2.waitKey(1) & 0xFF == ord('q'):
-    break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
-#cv2.imshow('thresh', thresh)
-#cv2.imshow('image', frame)
+
 cap.release()
 cv2.destroyAllWindows()
 cv2.waitKey()
